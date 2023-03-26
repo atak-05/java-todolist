@@ -10,6 +10,7 @@ public class App {
     }
     private static void start() {
         String str = "Lütfen Seçim Yapınız";
+        //devam edilecektir...
         str+="\n****************\n";
         str+="\n [1] Listele ";
         str+="\n [2] Ekle ";
@@ -41,7 +42,7 @@ public class App {
         }
 
     }
-
+    //*    */
     //* ***************************** delTodo **************************************** */
 
     private static void delTodo() {
