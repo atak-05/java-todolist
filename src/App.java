@@ -1,14 +1,22 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
-
-import javax.swing.JOptionPane;;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 public class App {
     static ArrayList<Object> todoList = new ArrayList<Object>();
     public static void main(String[] args) throws Exception {
-        
+        File file = new File("lib/todo.txt");
+        if (!file.exists()) {   
+            file.createNewFile();
+         }
         start();
     }
-    private static void start() {
+    private static void start() throws IOException {
         String str = "Lütfen Seçim Yapınız";
         //devam edilecektir...
         str+="\n****************\n";
@@ -45,7 +53,7 @@ public class App {
     //*    */
     //* ***************************** delTodo **************************************** */
 
-    private static void delTodo() {
+    private static void delTodo() throws IOException {
         String title = JOptionPane.showInputDialog(null, "Görev başlığını yazınız!");
         if (title != null && !title.equals("")){
             if(todoList.indexOf(title)>=0){
@@ -67,7 +75,7 @@ public class App {
     //* ****************************** addTodo ************************************** */
 
 
-    private static void addTodo() {
+    private static void addTodo() throws IOException {
         String title = JOptionPane.showInputDialog(null, "Görev başlığını yazınız!");
         if (title != null && !title.equals("")){
             if(todoList.indexOf(title)>=0){
@@ -84,32 +92,53 @@ public class App {
 
         }
     }
+    
     //* ****************************** list *************************************** */
-    private static void list() {
-        String str = "Todo List";
-        str+= "\n*****************\n ";
-        for (int i = 0; i < todoList.size(); i++) {
-            str+=  i+1 +". "+ todoList.get(i)+"\n";
+    private static void list() throws IOException {
+        File file = new File("lib/todo.txt");
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String line = br.readLine();
+        Object[] cols = {"id","title","isCompleted"};
+        Object[][] rows = new Object[getRecordCount()][3];
+        int index = 0;
+        while (line!=null){
+            rows[index] = line.split(",");
+            line=br.readLine();
+            index++;
         }
-        str+="Toplam "+todoList.size()+" kayıt bulunmaktadır";
-        message(str);
+        JTable table = new JTable(rows, cols);
+        JOptionPane.showMessageDialog(null,new JScrollPane(table));
+        
+        start();
 
     }
     //* **************************** message ***************************************** */
 
-    private static void message(String str) {
+   
+    private static int getRecordCount() throws IOException {
+        File file = new File("lib/todo.txt");
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        int count = 0;
+        while(br.readLine() != null){
+            count++;
+        }
+        br.close();
+        return count;
+}
+    private static void message(String str) throws IOException {
         JOptionPane.showMessageDialog(null, str);
         start();
     }
     //* ****************************** exit ***************************************** */
 
-    private static void exit() {
+    private static void exit() throws IOException {
         int confirm = JOptionPane.showConfirmDialog(null, "Çıkmak istediğinizden emin misiniz?");
         if (confirm == 0){
             System.exit(0);
 
         }else{
             start();
-        }
+        } 
     }
+
 }
