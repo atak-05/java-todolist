@@ -1,11 +1,17 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 
 public class App {
     static ArrayList<Object> todoList = new ArrayList<Object>();
@@ -54,43 +60,59 @@ public class App {
     //* ***************************** delTodo **************************************** */
 
     private static void delTodo() throws IOException {
-        String title = JOptionPane.showInputDialog(null, "Görev başlığını yazınız!");
-        if (title != null && !title.equals("")){
-            if(todoList.indexOf(title)>=0){
-                    todoList.remove(title);
-                    JOptionPane.showMessageDialog(null,"Silme Başarılı");
-                    start();           
-            }else{
-                JOptionPane.showMessageDialog(null,"Böyle bir başlık yok!!");
-                     start();   
-            }
-        }else{
-            JOptionPane.showMessageDialog(null,"Lütfen bir başlık yazınız!!!");
-            start();
 
+        String title = JOptionPane.showInputDialog(null, "Silinecek görev!");
+        File file = new File("lib/todo.txt");
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String temp = "";
+            String line = br.readLine();
+            while (line != null) {
+                Object[] dizi = line.split(",");
+                String data = dizi[1].toString();
+                if(!title.equals(data)){
+                    temp += line + System.lineSeparator();
+                }
+                line = br.readLine();
+
+                
+            }
+            BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+            bw.write(temp);
+            br.close();
+            bw.close();
+            start();
         }
-    }
-    
 
     //* ****************************** addTodo ************************************** */
 
-
     private static void addTodo() throws IOException {
-        String title = JOptionPane.showInputDialog(null, "Görev başlığını yazınız!");
-        if (title != null && !title.equals("")){
-            if(todoList.indexOf(title)>=0){
-                     JOptionPane.showMessageDialog(null,"Sistemde aynı başlık iki kez kullanılamaz!!");
-                     start();           
-            }else{
-                todoList.add(title);
-                JOptionPane.showMessageDialog(null,"Kayıt Eklendi!!");
-                     start();   
+        Todo data = new Todo();
+        JTextField title = new JTextField(5);
+        JPanel panel = new JPanel();
+        panel.add(new JLabel("Title:"));
+        panel.add(title);
+        int confirm = JOptionPane.showConfirmDialog(null, panel, "Lütfen başlık biligisini yazınız!", JOptionPane.OK_CANCEL_OPTION);
+        if (confirm == JOptionPane.OK_OPTION) {
+            int dataId = getRecordCount() + 1;
+            String dataTitle = title.getText();
+            File file = new File("lib/todo.txt");
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String temp = "";
+            String line = br.readLine();
+            while (line != null) {
+                temp += line + System.lineSeparator();
+                line = br.readLine();
             }
-        }else{
-            JOptionPane.showMessageDialog(null,"Lütfen bir başlık yazınız!!!");
-            start();
-
+            BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+            bw.write(temp);
+            bw.write(dataId + "," + dataTitle + "," + false);
+            br.close();
+            bw.close();
+        } else {
+            addTodo();
+            
         }
+        start();
     }
     
     //* ****************************** list *************************************** */
